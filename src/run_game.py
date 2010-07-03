@@ -9,7 +9,7 @@ from lib import *
 import lib
 
 def main():
-  Game.main()
+    Game.main()
 if __name__ == '__main__':  
     try:
         main()
