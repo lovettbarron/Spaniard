@@ -38,6 +38,7 @@ class Game:
         self.accel = 0
         self.rotate = 0
         self.score = 0
+        self.died = 0
         
         self.keyDown = False
         self.eventCheck = False
@@ -56,6 +57,7 @@ class Game:
             
             if self.playerX > 640:
                 self.playerX = 0
+                self.houseX = 
                 self.score += 1
             
             if self.keyDown == 1:
@@ -157,6 +159,7 @@ class Game:
             if self.playerX >= self.houseX and self.playerX <= self.houseX+128:
                 self.window.blit(self.type("WINNDDMILLLL"),(100,316))
                 self.playerX = 0
+                self.died += 1
             
     def fontPrep(self):
         pygame.font.init()
@@ -167,7 +170,8 @@ class Game:
         return self.font_image
     
     def typeScore(self):
-        self.window.blit(self.type(str(self.score)),(0,460))
+        self.window.blit(self.type("Giants escaped:" + str(self.score)),(0,450))
+        self.window.blit(self.type("Quests foiled:" + str(self.died)),(0,464))
                                    
     def typeCoord(self):
         self.window.blit(self.type(str(self.playerX) + "," + str(self.playerY)), (0,430))
