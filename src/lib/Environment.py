@@ -4,8 +4,6 @@ Created on Jul 1, 2010
 @author: andrew
 '''
 import pygame
-from pygame.locals import *
-from lib import *
 
 class Environment:
     
@@ -13,7 +11,7 @@ class Environment:
         self
         
     def drawPlayer(self):
-        Game.window.blit( Game.player (0,0))
+        pass
     
     def drawBackground(self):
         Game.window.fill((125,239,19))

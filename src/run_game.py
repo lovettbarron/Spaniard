@@ -6,9 +6,7 @@ Created on Jul 1, 2010
 import pygame,sys,math
 from lib import *
 
-import lib
-
-def main():
+def main(self):
     Game.main()
 if __name__ == '__main__':  
     try:
