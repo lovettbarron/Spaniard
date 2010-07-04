@@ -1,4 +1,4 @@
-import pygame
+import pygame, random
 from pygame.locals import *
 pygame.init()
 
@@ -57,7 +57,7 @@ class Game:
             
             if self.playerX > 640:
                 self.playerX = 0
-                self.houseX = 
+                self.houseX = random.randint(200,500)
                 self.score += 1
             
             if self.keyDown == 1:
@@ -88,7 +88,7 @@ class Game:
             self.maskSet()
             self.detectWindmill()
             self.detectRotar() 
-            self.typeCoord()
+            #self.typeCoord()
             self.typeScore()
             
             pygame.display.update()
