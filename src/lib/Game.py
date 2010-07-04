@@ -28,7 +28,7 @@ class Game:
         self.player = pygame.image.load(imageDir + 'play1.png').convert_alpha() #Player character
         self.trail = pygame.image.load(imageDir + 'trail.png').convert() #Trail
         self.house = pygame.image.load(imageDir + 'house1.png').convert() #house`
-        self.rotar = pygame.image.load(imageDir + 'rotar.png').convert_alpha() #Rotar
+        self.rotar = pygame.image.load(imageDir + 'rotar2.png').convert_alpha() #Rotar
         
         self.frame_timer = pygame.time.Clock()
         self.playerX = self.playerY = 0
@@ -37,6 +37,7 @@ class Game:
         self.houseY = 300-256+16
         self.accel = 0
         self.rotate = 0
+        self.score = 0
         
         self.keyDown = False
         self.eventCheck = False
@@ -53,32 +54,41 @@ class Game:
             #Environment.drawPlayer()
             #pygame.display.flip()
             
+            if self.playerX > 640:
+                self.playerX = 0
+                self.score += 1
+            
             if self.keyDown == 1:
                 self.playerX += 1
             
             if self.keyDown == 1:
                 self.accel += 1
+            elif self.keyDown == 0 and self.accel == 1:
+                self.accel = 0
             elif self.keyDown == 0 and self.accel > 0:
                 self.accel = self.accel%2
             
             self.playerX += self.accel
-            print self.accel
+            #print "Accel:" + str(self.accel)
             
             self.window.fill((255,255,255))
             self.ground.fill((0,0,0))
             
-            self.window.blit(self.house,(self.houseX,self.houseY))
+            self.window.blit(self.house,(self.houseOffset()))
             for trails in range(1,(self.playerX - self.accel - 1)):
-                self.window.blit(self.trail,(trails,self.playerY))    
-            self.window.blit(self.player,(self.playerX,self.playerY))
+                self.window.blit(self.trail,(trails,self.playerY ))    
+            #if self.playerX >= self.houseX and self.playerX <= self.houseX:
+            self.window.blit(self.player,(self.playerOffset()))
+            #else:
+            #self.window.blit(self.player,(self.playerOffset()))
             
             self.rotateWindmill()
+            self.maskSet()
             self.detectWindmill()
+            self.detectRotar() 
+            self.typeCoord()
+            self.typeScore()
             
-            
-            #self.playerX += 1
-            
-           # Update.updateLoop()
             pygame.display.update()
       
       
@@ -89,10 +99,12 @@ class Game:
                 self.keyDown = 0
             elif self.eventCheck == -1 and self.keyDown == 1:
                 self.keyDown = 0
+            elif self.eventCheck == -1 and self.keyDown ==0:
+                self.keydown = 0
             elif self.eventCheck == 1 and self.keyDown == 1:
                 self.keyDown = 1
             else:
-                self.keyDown = 1 
+                self.keyDown = 1
             
     def controlUpdate(self):
         for event in pygame.event.get():
@@ -118,22 +130,70 @@ class Game:
             self.rotar_copy = pygame.transform.rotate(self.rotar,(self.rotate))
             self.rot_rect = self.original
             self.rot_rect.center = self.rotar_copy.get_rect().center
-            print self.rot_rect.center
-            self.window.blit(self.rotar_copy,(self.houseX+50-self.rot_rect.center[0],self.houseY-self.rot_rect.center[1]))
-            
+            #print self.rot_rect.center
+            self.window.blit(self.rotar_copy,(self.windmillOffset()))
+    
     def detectWindmill(self):
-        print "Player:" + str(self.playerX+16) + "  Windmill:" + str(self.houseX)
+        #print "Player:" + str(self.playerX+16) + "  Windmill:" + str(self.houseX)
+        
         if self.playerX+16 >= self.houseX:
             print "ITS A WINDMILL"
-            self.window.blit(self.type("OH MY GOD IT\'S A WINDMILL"),(self.playerX-200,self.playerY+100))
+            #self.window.blit(self.type("OH MY GOD IT\'S A WINDMILL"),(self.playerX-200,self.playerY+100))
+
+    def detectRotar(self):
+        self.overlap = 0
+        print "Player:" + str(self.playerY) + " Rotar:" + str(self.rotar_copy.get_rect().bottom - self.rotar_copy.get_rect().center[1])
+        if self.playerY >= self.rotar_copy.get_rect().bottom - self.rotar_copy.get_rect().center[1]:
+                
+#            self.windmillOffsetEdge = (self.rotar_copy.get_rect().left, self.rotar_copy.get_rect().bottom - self.rotar_copy.get_rect().center[1]) 
+#            print "winmill Offset edge:" + str(self.windmillOffsetEdge)
+#            self.overlap = self.rotarMask.overlap_area(self.playerMask,(self.playerOffset()))
+#            self.overlap = self.overlap - self.playerMask.overlap_area(self.rotarMask,(self.windmillOffsetEdge))
+#            
+#            print "Overlap:" + str(self.overlap) 
+#            print "rotarCopy:" + str(self.houseX+50-self.rot_rect.left) + "," + str(self.houseY+20-self.rot_rect.top)
+            
+            #if self.overlap >= 1:
+            if self.playerX >= self.houseX and self.playerX <= self.houseX+128:
+                self.window.blit(self.type("WINNDDMILLLL"),(100,316))
+                self.playerX = 0
             
     def fontPrep(self):
         pygame.font.init()
-        self.font = pygame.font.SysFont('Advocut,Luxi Mono,Arial,Helvetica',14,True,False)
+        self.font = pygame.font.SysFont('Advocut,Helvetica',14,True,False)
         
     def type(self,toSay):
         self.font_image = self.font.render(toSay,False,(255,255,255))
         return self.font_image
+    
+    def typeScore(self):
+        self.window.blit(self.type(str(self.score)),(0,460))
+                                   
+    def typeCoord(self):
+        self.window.blit(self.type(str(self.playerX) + "," + str(self.playerY)), (0,430))
+    
+    def flipPixel(self,image):
+        return self.image.PixelArray.replace((0,0,0),(255,255,255))
+    
+    def windmillOffset(self):
+        return (self.houseX+50-self.rot_rect.center[0],self.houseY+20-self.rot_rect.center[1])
+    
+    def playerOffset(self):
+        return (self.playerX, self.playerY)
+    
+    def houseOffset(self):
+        return (self.houseX, self.houseY)
+    
+    def maskSet(self):
+        self.playerMask = pygame.mask.from_surface(self.player,0)
+        self.houseMask = pygame.mask.from_surface(self.house,0)
+        self.rotarMask = pygame.mask.from_surface(self.rotar_copy,0)
+        #self.rotarMask = self.rotarMask.invert()
+        
+        #return ({ 'player' : pygame.mask.from_surface(self.player, (127)),
+         #        'rotar' : pygame.mask.from_surface(self.rotar_copy, (127)),
+          #       'house' : pygame.mask.from_surface(self.house, (127))
+           #     })
     
 if __name__.lower() == '__main__':
     Game().main()
