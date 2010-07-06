@@ -25,7 +25,7 @@ class Game:
         
         
         pygame.display.set_caption("A Spaniard's Sight")
-        self.player = pygame.image.load(imageDir + 'play1.png').convert_alpha() #Player character
+        self.player = pygame.image.load(imageDir + 'play2.png').convert_alpha() #Player character
         self.trail = pygame.image.load(imageDir + 'trail.png').convert() #Trail
         self.house = pygame.image.load(imageDir + 'house1.png').convert() #house`
         self.rotar = pygame.image.load(imageDir + 'rotar2.png').convert_alpha() #Rotar
@@ -37,6 +37,7 @@ class Game:
         self.houseY = 300-256+16
         self.accel = 0
         self.rotate = 0
+        self.rotarA = 0
         self.score = 0
         self.died = 0
         
@@ -59,6 +60,7 @@ class Game:
                 self.playerX = 0
                 self.houseX = random.randint(200,500)
                 self.score += 1
+                self.rotarA = random.randint(0,5)
             
             if self.keyDown == 1:
                 self.playerX += 1
@@ -77,7 +79,7 @@ class Game:
             self.ground.fill((0,0,0))
             
             self.window.blit(self.house,(self.houseOffset()))
-            for trails in range(1,(self.playerX - self.accel - 1)):
+            for trails in range(1,(self.playerX - self.accel)):
                 self.window.blit(self.trail,(trails,self.playerY ))    
             #if self.playerX >= self.houseX and self.playerX <= self.houseX:
             self.window.blit(self.player,(self.playerOffset()))
@@ -128,7 +130,7 @@ class Game:
                 
     def rotateWindmill(self):
             self.original = self.rotar.get_rect()
-            self.rotate = (self.rotate + 1) % 90
+            self.rotate = (self.rotate + 1 + self.rotarA) % 90
             self.rotar_copy = pygame.transform.rotate(self.rotar,(self.rotate))
             self.rot_rect = self.original
             self.rot_rect.center = self.rotar_copy.get_rect().center
@@ -159,6 +161,7 @@ class Game:
             if self.playerX >= self.houseX and self.playerX <= self.houseX+128:
                 self.window.blit(self.type("WINNDDMILLLL"),(100,316))
                 self.playerX = 0
+                self.accel = 0
                 self.died += 1
             
     def fontPrep(self):
